@@ -91,7 +91,6 @@ http://localhost:5173
 Para acessar o sistema:
 - **Professor:** professor / 1234 (acesso completo)
 - **Aluno:** aluno / 1234 (apenas visualização)
-- **Admin:** admin / 1234 (acesso de professor)
 
 ## 🌐 Integração com Backend
 

@@ -86,7 +86,7 @@ export default function Login() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   
-  const { login } = useAuth();
+  const { login, isProfessor, isAluno } = useAuth();
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
@@ -104,7 +104,15 @@ export default function Login() {
       const success = login(username, password);
       if (success) {
         toast.success("Login realizado com sucesso!");
-        navigate("/admin");
+        
+        // Redirecionamento baseado no role do usuário
+        if (isProfessor()) {
+          navigate("/admin");
+        } else if (isAluno()) {
+          navigate("/");
+        } else {
+          navigate("/"); // Default para home
+        }
       } else {
         setError("Credenciais inválidas");
       }
@@ -142,8 +150,7 @@ export default function Login() {
         <InfoText>
           <strong>Credenciais de teste:</strong><br />
           <strong>Professor:</strong> professor / 1234<br />
-          <strong>Aluno:</strong> aluno / 1234<br />
-          <strong>Admin:</strong> admin / 1234
+          <strong>Aluno:</strong> aluno / 1234
         </InfoText>
       </LoginCard>
     </Container>

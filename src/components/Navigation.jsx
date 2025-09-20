@@ -95,15 +95,12 @@ export default function Navigation() {
               {isProfessor() && (
                 <>
                   <NavLink to="/admin">
-                    Admin
-                  </NavLink>
-                  <NavLink to="/create">
-                    Novo Post
+                    Painel
                   </NavLink>
                 </>
               )}
               <UserInfo>
-                Olá, {user.username} ({user.role})
+                Olá, {user.username}
               </UserInfo>
               <Button onClick={handleLogout}>
                 Logout

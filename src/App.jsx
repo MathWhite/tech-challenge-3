@@ -91,8 +91,23 @@ function App() {
       <AppContainer>
         <Router>
           <Routes>
-            <Route path="/" element={<Home />} />
-            <Route path="/post/:id" element={<PostRead />} />
+            <Route path="/login" element={<Login />} />
+            <Route 
+              path="/" 
+              element={
+                <RequireAuth>
+                  <Home />
+                </RequireAuth>
+              } 
+            />
+            <Route 
+              path="/post/:id" 
+              element={
+                <RequireAuth>
+                  <PostRead />
+                </RequireAuth>
+              } 
+            />
             <Route
               path="/create"
               element={
@@ -117,7 +132,6 @@ function App() {
                 </RequireProfessor>
               }
             />
-            <Route path="/login" element={<Login />} />
           </Routes>
         </Router>
       </AppContainer>

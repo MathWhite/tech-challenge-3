@@ -75,6 +75,18 @@ const Input = styled.input`
   }
 `;
 
+const CheckboxWrapper = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+`;
+
+const Checkbox = styled.input`
+  width: 1.2rem;
+  height: 1.2rem;
+  cursor: pointer;
+`;
+
 const TextArea = styled.textarea`
   padding: 0.75rem;
   border: 1px solid #ddd;
@@ -167,6 +179,8 @@ export default function PostEdit() {
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
   const [author, setAuthor] = useState("");
+  const [isActive, setIsActive] = useState(true);
+  const [readTime, setReadTime] = useState("");
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
@@ -183,6 +197,8 @@ export default function PostEdit() {
         setTitle(data.title || "");
         setContent(data.content || "");
         setAuthor(data.author || "");
+        setIsActive(data.isActive !== undefined ? data.isActive : true);
+        setReadTime(data.readTime || "");
         setError("");
       } catch (err) {
         setError("Erro ao carregar o post");
@@ -201,7 +217,7 @@ export default function PostEdit() {
     e.preventDefault();
     
     if (!title.trim() || !content.trim() || !author.trim()) {
-      toast.error("Por favor, preencha todos os campos");
+      toast.error("Por favor, preencha todos os campos obrigatórios");
       return;
     }
 
@@ -212,6 +228,8 @@ export default function PostEdit() {
         title: title.trim(),
         content: content.trim(),
         author: author.trim(),
+        isActive,
+        readTime: readTime.trim() || null,
         updatedAt: new Date().toISOString()
       };
       
@@ -305,6 +323,31 @@ export default function PostEdit() {
             disabled={saving}
             required
           />
+        </FormGroup>
+
+        <FormGroup>
+          <Label htmlFor="readTime">Tempo de Leitura</Label>
+          <Input
+            id="readTime"
+            type="text"
+            value={readTime}
+            onChange={(e) => setReadTime(e.target.value)}
+            placeholder="Ex: 5 min, 3 minutos, etc."
+            disabled={saving}
+          />
+        </FormGroup>
+
+        <FormGroup>
+          <CheckboxWrapper>
+            <Checkbox
+              id="isActive"
+              type="checkbox"
+              checked={isActive}
+              onChange={(e) => setIsActive(e.target.checked)}
+              disabled={saving}
+            />
+            <Label htmlFor="isActive">Post ativo (visível no site)</Label>
+          </CheckboxWrapper>
         </FormGroup>
 
         <FormGroup>

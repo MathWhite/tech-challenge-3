@@ -40,24 +40,16 @@ export const AuthProvider = ({ children }) => {
     
     if (username === "professor" && password === "1234") {
       newUser = { 
-        username: "Professor Matheus", 
+        username: "Matheus", 
         role: "professor",
         token: TOKENS.professor,
         loginTime: new Date().toISOString()
       };
     } else if (username === "aluno" && password === "1234") {
       newUser = { 
-        username: "Aluno Matheus", 
+        username: "Matheus", 
         role: "aluno",
         token: TOKENS.aluno,
-        loginTime: new Date().toISOString()
-      };
-    } else if (username === "admin" && password === "1234") {
-      // Mantém compatibilidade com login anterior
-      newUser = { 
-        username: "Professor Admin", 
-        role: "professor",
-        token: TOKENS.professor,
         loginTime: new Date().toISOString()
       };
     }

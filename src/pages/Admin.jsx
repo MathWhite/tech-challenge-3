@@ -1,6 +1,8 @@
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import styled from "styled-components";
+import Icon from '@mdi/react';
+import { mdiDelete, mdiNoteEdit, mdiEye } from '@mdi/js';
 import { getPosts, deletePost } from "../api/posts";
 import { useAuth } from "../contexts/AuthContext";
 import Navigation from "../components/Navigation";
@@ -68,6 +70,15 @@ const SecondaryButton = styled(Button)`
   
   &:hover:not(:disabled) {
     background: #5a6268;
+  }
+`;
+
+const DeleteButton = styled(Button)`
+  background: #dc3545;
+  color: white;
+  
+  &:hover:not(:disabled) {
+    background: #c82333;
   }
 `;
 
@@ -142,35 +153,92 @@ const PostMeta = styled.div`
   font-size: 0.9rem;
 `;
 
-const ActionButton = styled(Button)`
-  padding: 0.5rem 1rem;
-  font-size: 0.9rem;
-`;
-
-const EditButton = styled(ActionButton)`
-  background: #ffc107;
-  color: #212529;
+const ActionButton = styled.button`
+  background: transparent;
+  border: none;
+  padding: 0.5rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 4px;
+  transition: opacity 0.2s;
+  color: #666;
+  position: relative;
   
-  &:hover:not(:disabled) {
-    background: #e0a800;
+  &:hover {
+    opacity: 0.7;
+  }
+  
+  &:hover::after {
+    content: attr(data-tooltip);
+    position: absolute;
+    bottom: 40px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: #333;
+    color: white;
+    padding: 0.5rem;
+    border-radius: 4px;
+    white-space: nowrap;
+    font-size: 0.8rem;
+    z-index: 1000;
+  }
+  
+  &:hover::before {
+    content: '';
+    position: absolute;
+    bottom: 32px;
+    left: 50%;
+    transform: translateX(-50%);
+    border: 4px solid transparent;
+    border-top-color: #333;
+    z-index: 1000;
   }
 `;
 
-const DeleteButton = styled(ActionButton)`
-  background: #dc3545;
-  color: white;
+const ActionLink = styled(Link)`
+  background: transparent;
+  border: none;
+  padding: 0.5rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 4px;
+  transition: opacity 0.2s;
+  color: #666;
+  position: relative;
+  text-decoration: none;
   
-  &:hover:not(:disabled) {
-    background: #c82333;
+  &:hover {
+    opacity: 0.7;
   }
-`;
-
-const ViewButton = styled(ActionButton)`
-  background: #007bff;
-  color: white;
   
-  &:hover:not(:disabled) {
-    background: #0056b3;
+  &:hover::after {
+    content: attr(data-tooltip);
+    position: absolute;
+    bottom: 40px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: #333;
+    color: white;
+    padding: 0.5rem;
+    border-radius: 4px;
+    white-space: nowrap;
+    font-size: 0.8rem;
+    z-index: 1000;
+  }
+  
+  &:hover::before {
+    content: '';
+    position: absolute;
+    bottom: 32px;
+    left: 50%;
+    transform: translateX(-50%);
+    border: 4px solid transparent;
+    border-top-color: #333;
+    z-index: 1000;
   }
 `;
 
@@ -319,9 +387,6 @@ export default function Admin() {
           <CreateButton to="/create">
             + Novo Post
           </CreateButton>
-          <SecondaryButton onClick={handleLogout}>
-            Logout
-          </SecondaryButton>
         </HeaderActions>
       </Header>
 
@@ -331,9 +396,9 @@ export default function Admin() {
         <PostsTable>
           <TableHeader>
             <div>Post</div>
-            <div>Visualizar</div>
-            <div>Editar</div>
-            <div>Excluir</div>
+            <div></div>
+            <div></div>
+            <div></div>
           </TableHeader>
 
           {posts.length === 0 ? (
@@ -350,17 +415,26 @@ export default function Admin() {
                   </PostMeta>
                 </PostInfo>
                 
-                <Link to={`/post/${post._id || post.id}`}>
-                  <ViewButton>Ver</ViewButton>
-                </Link>
+                <ActionLink 
+                  to={`/post/${post._id || post.id}`}
+                  data-tooltip="Visualizar post"
+                >
+                  <Icon path={mdiEye} size={0.8} />
+                </ActionLink>
                 
-                <Link to={`/edit/${post._id || post.id}`}>
-                  <EditButton>Editar</EditButton>
-                </Link>
+                <ActionLink 
+                  to={`/edit/${post._id || post.id}`}
+                  data-tooltip="Editar post"
+                >
+                  <Icon path={mdiNoteEdit} size={0.8} />
+                </ActionLink>
                 
-                <DeleteButton onClick={() => handleDeleteClick(post)}>
-                  Excluir
-                </DeleteButton>
+                <ActionButton 
+                  data-tooltip="Excluir post"
+                  onClick={() => handleDeleteClick(post)}
+                >
+                  <Icon path={mdiDelete} size={0.8} />
+                </ActionButton>
               </PostRow>
             ))
           )}
