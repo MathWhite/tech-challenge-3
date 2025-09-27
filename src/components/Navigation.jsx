@@ -95,7 +95,7 @@ export default function Navigation() {
               {isProfessor() && (
                 <>
                   <NavLink to="/admin">
-                    Painel
+                    Admin
                   </NavLink>
                 </>
               )}

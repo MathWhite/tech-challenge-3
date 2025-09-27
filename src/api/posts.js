@@ -28,3 +28,18 @@ export const updatePost = async (id, postData) => {
 export const deletePost = async (id) => {
   await api.delete(`/posts/${id}`);
 };
+
+// Funções para gerenciar comentários
+export const createComment = async (postId, commentData) => {
+  const { data } = await api.post(`/posts/${postId}/comments`, commentData);
+  return data;
+};
+
+export const updateComment = async (postId, commentId, commentData) => {
+  const { data } = await api.put(`/posts/${postId}/comments/${commentId}`, commentData);
+  return data;
+};
+
+export const deleteComment = async (postId, commentId) => {
+  await api.delete(`/posts/${postId}/comments/${commentId}`);
+};

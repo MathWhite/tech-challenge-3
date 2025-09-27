@@ -8,6 +8,9 @@ const Card = styled.div`
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
   margin-bottom: 1rem;
   transition: transform 0.2s;
+  opacity: ${props => (props.isInactive ? 0.6 : 1)};
+  background-color: ${props => (props.isInactive ? '#f5f5f5' : 'white')};
+  
   &:hover {
     transform: translateY(-2px);
   }
@@ -24,19 +27,29 @@ const Author = styled.p`
   margin-bottom: 0.5rem;
 `;
 
+const ReadTime = styled.p`
+  font-size: 0.8rem;
+  color: #888;
+  margin-bottom: 0.5rem;
+`;
+
 const Description = styled.p`
   font-size: 1rem;
   color: #333;
 `;
 
-export default function PostCard({ id, title, author, description }) {
+export default function PostCard({ id, title, author, description, readTime, isActive = true, isProfessorView = false }) {
+  const isInactive = isProfessorView && !isActive;
+  
   return (
-    <Card>
+    <Card isInactive={isInactive}>
       <Link to={`/post/${id}`}>
         <Title>{title}</Title>
       </Link>
       <Author>por {author}</Author>
-      <Description>{description}</Description>
+      {readTime && <ReadTime>⏱️ {readTime} min de leitura</ReadTime>}
+      {isInactive && <ReadTime style={{color: '#999', fontStyle: 'italic'}}>(Post inativo)</ReadTime>}
+      {description && <Description>{description}</Description>}
     </Card>
   );
 }

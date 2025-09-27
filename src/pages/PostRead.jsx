@@ -1,14 +1,27 @@
 import { useEffect, useState } from "react";
-import { useParams, Link } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import styled from "styled-components";
-import { getPost } from "../api/posts";
+import { getPost, createComment, updateComment, deleteComment } from "../api/posts";
+import { useAuth } from "../contexts/AuthContext";
 import Navigation from "../components/Navigation";
 import ReactMarkdown from "react-markdown";
+import toast from "react-hot-toast";
+import Icon from '@mdi/react';
+import { mdiDotsHorizontal, mdiPencil, mdiDelete } from '@mdi/js';
 
 const Container = styled.div`
-  max-width: 800px;
+  max-width: 1800px;
   margin: 2rem auto;
-  padding: 0 1rem;
+  padding: 0 1rem 2rem 1rem;
+
+  @media (max-width: 768px) {
+    max-width: 100%;
+    padding: 0 1rem 2rem 1rem;
+  }
+  
+  @media (max-width: 480px) {
+    padding: 0 0.5rem 2rem 0.5rem;
+  }
 `;
 
 const MainContent = styled.div`
@@ -16,11 +29,14 @@ const MainContent = styled.div`
   min-height: 100vh;
 `;
 
-const BackButton = styled(Link)`
+const BackButton = styled.button`
   display: inline-block;
   margin-bottom: 1rem;
   color: #667eea;
-  text-decoration: none;
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: inherit;
   
   &:hover {
     text-decoration: underline;
@@ -99,6 +115,7 @@ const ErrorMessage = styled.div`
 
 const CommentsSection = styled.div`
   margin-top: 3rem;
+  margin-bottom: 3rem;
   padding-top: 2rem;
   border-top: 1px solid #eee;
 `;
@@ -149,36 +166,147 @@ const Comment = styled.div`
   padding: 1rem;
   border-radius: 8px;
   margin-bottom: 1rem;
+  position: relative;
+`;
+
+const CommentHeader = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 0.5rem;
+`;
+
+const CommentInfo = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
 `;
 
 const CommentAuthor = styled.div`
   font-weight: bold;
   color: #333;
-  margin-bottom: 0.5rem;
+`;
+
+const CommentDate = styled.div`
+  font-size: 0.75rem;
+  color: #888;
 `;
 
 const CommentText = styled.div`
   color: #666;
 `;
 
+const CommentMenuButton = styled.button`
+  background: none;
+  border: none;
+  color: #888;
+  cursor: pointer;
+  padding: 0.25rem;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  
+  &:hover {
+    background: rgba(0, 0, 0, 0.1);
+    color: #666;
+  }
+`;
+
+const CommentMenu = styled.div`
+  position: absolute;
+  top: 2.5rem;
+  right: 0.5rem;
+  background: white;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  z-index: 10;
+  min-width: 120px;
+`;
+
+const CommentMenuItem = styled.button`
+  width: 100%;
+  padding: 0.75rem 1rem;
+  border: none;
+  background: none;
+  color: #333;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.9rem;
+  
+  &:hover {
+    background: #f5f5f5;
+  }
+  
+  &:first-child {
+    border-radius: 8px 8px 0 0;
+  }
+  
+  &:last-child {
+    border-radius: 0 0 8px 8px;
+  }
+  
+  &.delete {
+    color: #e74c3c;
+    
+    &:hover {
+      background: #ffeaea;
+    }
+  }
+`;
+
+const EditCommentInput = styled.input`
+  width: 100%;
+  padding: 0.5rem;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  margin-top: 0.5rem;
+  font-size: 0.9rem;
+`;
+
+const EditCommentActions = styled.div`
+  display: flex;
+  gap: 0.5rem;
+  margin-top: 0.5rem;
+`;
+
+const EditActionButton = styled.button`
+  padding: 0.3rem 0.8rem;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.8rem;
+  
+  &.save {
+    background: #28a745;
+    color: white;
+  }
+  
+  &.cancel {
+    background: #6c757d;
+    color: white;
+  }
+  
+  &:hover {
+    opacity: 0.8;
+  }
+`;
+
 export default function PostRead() {
   const { id } = useParams();
+  const navigate = useNavigate();
+  const { user } = useAuth();
   const [post, setPost] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
-  const [comments, setComments] = useState([
-    {
-      id: 1,
-      author: "João Silva",
-      text: "Excelente post! Muito esclarecedor."
-    },
-    {
-      id: 2,
-      author: "Maria Santos",
-      text: "Obrigada por compartilhar esse conhecimento."
-    }
-  ]);
+  const [comments, setComments] = useState([]);
   const [newComment, setNewComment] = useState("");
+  const [editingComment, setEditingComment] = useState(null);
+  const [editText, setEditText] = useState("");
+  const [openMenuComment, setOpenMenuComment] = useState(null);
 
   useEffect(() => {
     const fetchPost = async () => {
@@ -186,6 +314,7 @@ export default function PostRead() {
         setLoading(true);
         const data = await getPost(id);
         setPost(data);
+        setComments(data.comments || []); // Carregar comentários da API
       } catch (err) {
         setError("Erro ao carregar o post");
         console.error("Error fetching post:", err);
@@ -199,17 +328,123 @@ export default function PostRead() {
     }
   }, [id]);
 
-  const handleCommentSubmit = (e) => {
+  const handleCommentSubmit = async (e) => {
     e.preventDefault();
-    if (newComment.trim()) {
-      const comment = {
-        id: comments.length + 1,
-        author: "Usuário Anônimo",
-        text: newComment.trim()
-      };
-      setComments([...comments, comment]);
-      setNewComment("");
+    if (!newComment.trim()) return;
+    
+    if (!user) {
+      toast.error("Você precisa estar logado para comentar");
+      return;
     }
+
+    try {
+      const commentData = {
+        comment: newComment.trim()
+      };
+      
+      const updatedPost = await createComment(id, commentData);
+      setComments(updatedPost.comments || []);
+      setNewComment("");
+      toast.success("Comentário adicionado com sucesso!");
+    } catch (error) {
+      console.error("Error creating comment:", error);
+      const errorMessage = error.response?.data?.message || "Erro ao adicionar comentário";
+      toast.error(errorMessage);
+    }
+  };
+
+  const handleEditComment = (comment) => {
+    setEditingComment(comment._id);
+    setEditText(comment.comment);
+  };
+
+  const handleUpdateComment = async (commentId) => {
+    if (!editText.trim()) return;
+
+    try {
+      const commentData = {
+        comment: editText.trim()
+      };
+      
+      const updatedPost = await updateComment(id, commentId, commentData);
+      setComments(updatedPost.comments || []);
+      setEditingComment(null);
+      setEditText("");
+      setOpenMenuComment(null);
+      toast.success("Comentário atualizado com sucesso!");
+    } catch (error) {
+      console.error("Error updating comment:", error);
+      const errorMessage = error.response?.data?.message || "Erro ao atualizar comentário";
+      toast.error(errorMessage);
+    }
+  };
+
+  const handleDeleteComment = async (commentId) => {
+    if (!window.confirm("Tem certeza que deseja deletar este comentário?")) return;
+
+    try {
+      await deleteComment(id, commentId);
+      // Recarregar o post para obter a lista atualizada de comentários
+      const updatedPost = await getPost(id);
+      setComments(updatedPost.comments || []);
+      setOpenMenuComment(null);
+      toast.success("Comentário deletado com sucesso!");
+    } catch (error) {
+      console.error("Error deleting comment:", error);
+      const errorMessage = error.response?.data?.message || "Erro ao deletar comentário";
+      toast.error(errorMessage);
+    }
+  };
+
+  const cancelEdit = () => {
+    setEditingComment(null);
+    setEditText("");
+  };
+
+  // Função para formatar data
+  const formatDate = (dateString) => {
+    if (!dateString) return "";
+    const date = new Date(dateString);
+    return date.toLocaleDateString('pt-BR', {
+      day: '2-digit',
+      month: '2-digit',
+      year: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit'
+    });
+  };
+
+  // Função para controlar o menu de ações
+  const toggleCommentMenu = (commentId) => {
+    setOpenMenuComment(openMenuComment === commentId ? null : commentId);
+  };
+
+  // Fechar menu ao clicar fora
+  useEffect(() => {
+    const handleClickOutside = () => {
+      setOpenMenuComment(null);
+    };
+    
+    if (openMenuComment) {
+      document.addEventListener('click', handleClickOutside);
+      return () => document.removeEventListener('click', handleClickOutside);
+    }
+  }, [openMenuComment]);
+
+  // Função para verificar se o usuário pode editar/deletar um comentário
+  const canEditComment = (comment) => {
+    if (!user) return false;
+    return comment.author === user.username;
+  };
+
+  const canDeleteComment = (comment) => {
+    if (!user) return false;
+    // Professor pode deletar comentários de alunos, mas não de outros professores
+    if (user.role === "professor") {
+      return comment.author === user.username || comment.authorRole === "aluno";
+    }
+    // Aluno só pode deletar seus próprios comentários
+    return comment.author === user.username;
   };
 
   if (loading) {
@@ -229,7 +464,7 @@ export default function PostRead() {
         <Navigation />
         <Container>
           <ErrorMessage>{error}</ErrorMessage>
-          <BackButton to="/">← Voltar para a página inicial</BackButton>
+          <BackButton onClick={() => navigate(-1)}>← Voltar</BackButton>
         </Container>
       </MainContent>
     );
@@ -241,7 +476,7 @@ export default function PostRead() {
         <Navigation />
         <Container>
           <ErrorMessage>Post não encontrado</ErrorMessage>
-          <BackButton to="/">← Voltar para a página inicial</BackButton>
+          <BackButton onClick={() => navigate(-1)}>← Voltar</BackButton>
         </Container>
       </MainContent>
     );
@@ -251,7 +486,7 @@ export default function PostRead() {
     <MainContent>
       <Navigation />
       <Container>
-      <BackButton to="/">← Voltar para a página inicial</BackButton>
+      <BackButton onClick={() => navigate(-1)}>← Voltar</BackButton>
       
       <Article>
         <Title>{post.title}</Title>
@@ -278,10 +513,72 @@ export default function PostRead() {
           </CommentButton>
         </CommentForm>
 
-        {comments.map((comment) => (
-          <Comment key={comment.id}>
-            <CommentAuthor>{comment.author}</CommentAuthor>
-            <CommentText>{comment.text}</CommentText>
+        {comments.map((comment, index) => (
+          <Comment key={comment._id || index}>
+            <CommentHeader>
+              <CommentInfo>
+                <CommentAuthor>{comment.author}</CommentAuthor>
+                <CommentDate>{formatDate(comment.createdAt)}</CommentDate>
+              </CommentInfo>
+              {user && (canEditComment(comment) || canDeleteComment(comment)) && (
+                <div style={{ position: 'relative' }}>
+                  <CommentMenuButton 
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      toggleCommentMenu(comment._id);
+                    }}
+                  >
+                    <Icon path={mdiDotsHorizontal} size={0.8} />
+                  </CommentMenuButton>
+                  
+                  {openMenuComment === comment._id && (
+                    <CommentMenu onClick={(e) => e.stopPropagation()}>
+                      {canEditComment(comment) && (
+                        <CommentMenuItem onClick={() => {
+                          handleEditComment(comment);
+                          setOpenMenuComment(null);
+                        }}>
+                          <Icon path={mdiPencil} size={0.7} />
+                          Editar
+                        </CommentMenuItem>
+                      )}
+                      {canDeleteComment(comment) && (
+                        <CommentMenuItem 
+                          className="delete" 
+                          onClick={() => handleDeleteComment(comment._id)}
+                        >
+                          <Icon path={mdiDelete} size={0.7} />
+                          Deletar
+                        </CommentMenuItem>
+                      )}
+                    </CommentMenu>
+                  )}
+                </div>
+              )}
+            </CommentHeader>
+            
+            {editingComment === comment._id ? (
+              <>
+                <EditCommentInput
+                  value={editText}
+                  onChange={(e) => setEditText(e.target.value)}
+                  autoFocus
+                />
+                <EditCommentActions>
+                  <EditActionButton 
+                    className="save" 
+                    onClick={() => handleUpdateComment(comment._id)}
+                  >
+                    Salvar
+                  </EditActionButton>
+                  <EditActionButton className="cancel" onClick={cancelEdit}>
+                    Cancelar
+                  </EditActionButton>
+                </EditCommentActions>
+              </>
+            ) : (
+              <CommentText>{comment.comment}</CommentText>
+            )}
           </Comment>
         ))}
       </CommentsSection>

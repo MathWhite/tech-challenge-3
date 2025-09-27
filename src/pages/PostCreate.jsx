@@ -162,6 +162,7 @@ export default function PostCreate() {
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
   const [author, setAuthor] = useState("");
+  const [description, setDescription] = useState("");
   const [isActive, setIsActive] = useState(true);
   const [readTime, setReadTime] = useState("");
   const [loading, setLoading] = useState(false);
@@ -172,7 +173,7 @@ export default function PostCreate() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     
-    if (!title.trim() || !content.trim() || !author.trim()) {
+    if (!title.trim() || !content.trim() || !author.trim() || !description.trim()) {
       toast.error("Por favor, preencha todos os campos obrigatórios");
       return;
     }
@@ -184,6 +185,7 @@ export default function PostCreate() {
         title: title.trim(),
         content: content.trim(),
         author: author.trim(),
+        description: description.trim(),
         isActive,
         readTime: readTime.trim() || null,
         createdAt: new Date().toISOString()
@@ -237,6 +239,19 @@ export default function PostCreate() {
         </FormGroup>
 
         <FormGroup>
+          <Label htmlFor="description">Descrição *</Label>
+          <Input
+            id="description"
+            type="text"
+            value={description}
+            onChange={(e) => setDescription(e.target.value)}
+            placeholder="Breve descrição do post (aparece na listagem)"
+            disabled={loading}
+            required
+          />
+        </FormGroup>
+
+        <FormGroup>
           <Label htmlFor="author">Autor *</Label>
           <Input
             id="author"
@@ -250,7 +265,7 @@ export default function PostCreate() {
         </FormGroup>
 
         <FormGroup>
-          <Label htmlFor="readTime">Tempo de Leitura</Label>
+          <Label htmlFor="readTime">Tempo de Leitura (minutos)</Label>
           <Input
             id="readTime"
             type="text"

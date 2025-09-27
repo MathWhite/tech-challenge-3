@@ -179,6 +179,7 @@ export default function PostEdit() {
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
   const [author, setAuthor] = useState("");
+  const [description, setDescription] = useState("");
   const [isActive, setIsActive] = useState(true);
   const [readTime, setReadTime] = useState("");
   const [loading, setLoading] = useState(true);
@@ -197,6 +198,7 @@ export default function PostEdit() {
         setTitle(data.title || "");
         setContent(data.content || "");
         setAuthor(data.author || "");
+        setDescription(data.description || "");
         setIsActive(data.isActive !== undefined ? data.isActive : true);
         setReadTime(data.readTime || "");
         setError("");
@@ -216,7 +218,7 @@ export default function PostEdit() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     
-    if (!title.trim() || !content.trim() || !author.trim()) {
+    if (!title.trim() || !content.trim() || !author.trim() || !description.trim()) {
       toast.error("Por favor, preencha todos os campos obrigatórios");
       return;
     }
@@ -228,6 +230,7 @@ export default function PostEdit() {
         title: title.trim(),
         content: content.trim(),
         author: author.trim(),
+        description: description.trim(),
         isActive,
         readTime: readTime.trim() || null,
         updatedAt: new Date().toISOString()
@@ -313,6 +316,19 @@ export default function PostEdit() {
         </FormGroup>
 
         <FormGroup>
+          <Label htmlFor="description">Descrição *</Label>
+          <Input
+            id="description"
+            type="text"
+            value={description}
+            onChange={(e) => setDescription(e.target.value)}
+            placeholder="Breve descrição do post (aparece na listagem)"
+            disabled={saving}
+            required
+          />
+        </FormGroup>
+
+        <FormGroup>
           <Label htmlFor="author">Autor *</Label>
           <Input
             id="author"
@@ -326,7 +342,7 @@ export default function PostEdit() {
         </FormGroup>
 
         <FormGroup>
-          <Label htmlFor="readTime">Tempo de Leitura</Label>
+          <Label htmlFor="readTime">Tempo de Leitura (minutos)</Label>
           <Input
             id="readTime"
             type="text"
