@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import styled from "styled-components";
 import { getPost, createComment, updateComment, deleteComment } from "../api/posts";
-import { useAuth } from "../contexts/AuthContext";
+import { useAuth } from "../contexts/useAuth";
 import Navigation from "../components/Navigation";
 import ReactMarkdown from "react-markdown";
 import toast from "react-hot-toast";

@@ -2,7 +2,6 @@ import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import styled from "styled-components";
 import { getPost, updatePost } from "../api/posts";
-import { useAuth } from "../contexts/AuthContext";
 import Navigation from "../components/Navigation";
 import toast from "react-hot-toast";
 
@@ -186,7 +185,6 @@ export default function PostEdit() {
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
   
-  const { user } = useAuth();
   const navigate = useNavigate();
 
   useEffect(() => {

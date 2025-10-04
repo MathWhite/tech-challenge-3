@@ -4,7 +4,7 @@ import styled from "styled-components";
 import Icon from '@mdi/react';
 import { mdiDelete, mdiNoteEdit, mdiEye } from '@mdi/js';
 import { getPosts, deletePost } from "../api/posts";
-import { useAuth } from "../contexts/AuthContext";
+import { useAuth } from "../contexts/useAuth";
 import Navigation from "../components/Navigation";
 import toast from "react-hot-toast";
 
@@ -309,7 +309,7 @@ export default function Admin() {
   const [postToDelete, setPostToDelete] = useState(null);
   const [deleting, setDeleting] = useState(false);
   
-  const { user, logout } = useAuth();
+  const { user } = useAuth();
 
   const fetchPosts = async () => {
     try {
@@ -356,11 +356,6 @@ export default function Admin() {
   const handleDeleteCancel = () => {
     setDeleteModalOpen(false);
     setPostToDelete(null);
-  };
-
-  const handleLogout = () => {
-    logout();
-    toast.success("Logout realizado com sucesso!");
   };
 
   if (loading) {

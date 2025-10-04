@@ -1,9 +1,9 @@
-import { useEffect, useState } from "react";
+import { useState, useEffect, useCallback } from "react";
 import styled from "styled-components";
 import PostCard from "../components/PostCard";
 import Navigation from "../components/Navigation";
 import { getPosts, searchPosts } from "../api/posts";
-import { useAuth } from "../contexts/AuthContext";
+import { useAuth } from "../contexts/useAuth";
 
 const Container = styled.div`
   max-width: 800px;
@@ -37,7 +37,7 @@ export default function Home() {
   const [loading, setLoading] = useState(true);
   const { isProfessor } = useAuth();
 
-  const fetchPosts = async () => {
+  const fetchPosts = useCallback(async () => {
     setLoading(true);
     try {
       const data = query ? await searchPosts(query) : await getPosts();
@@ -47,11 +47,11 @@ export default function Home() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [query]);
 
   useEffect(() => {
     fetchPosts();
-  }, [query]);
+  }, [fetchPosts]);
 
   return (
     <MainContent>

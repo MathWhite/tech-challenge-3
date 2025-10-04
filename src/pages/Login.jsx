@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { useAuth } from "../contexts/AuthContext";
+import { useAuth } from "../contexts/useAuth";
 import styled from "styled-components";
 import toast from "react-hot-toast";
 
@@ -116,7 +116,7 @@ export default function Login() {
       } else {
         setError("Credenciais inválidas");
       }
-    } catch (err) {
+    } catch {
       setError("Erro ao fazer login");
     } finally {
       setLoading(false);
