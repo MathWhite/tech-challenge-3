@@ -15,10 +15,10 @@
     "docker:build-dev": "docker build -f Dockerfile.dev -t tech-challenge-3-dev .",
     "docker:run": "docker run -p 8080:80 tech-challenge-3",
     "docker:run-dev": "docker run -p 3000:3000 -v $(pwd):/app -v /app/node_modules tech-challenge-3-dev",
-    "docker:dev": "docker-compose up app-dev -d",
-    "docker:prod": "docker-compose up app-prod -d",
-    "docker:stop": "docker-compose down",
-    "docker:clean": "docker-compose down --rmi all --volumes"
+    "docker:dev": "docker compose up app-dev -d",
+    "docker:prod": "docker compose up app-prod -d",
+    "docker:stop": "docker compose down",
+    "docker:clean": "docker compose down --rmi all --volumes"
   },
   "dependencies": {
     "@mdi/js": "^7.4.47",

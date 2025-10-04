@@ -28,7 +28,7 @@ Sistema de blog desenvolvido em React para professores criarem e gerenciarem pos
 
 ```
 src/
-├── api/                 # Integração com backend
+├── api/                # Integração com backend
 │   ├── axios.js        # Configuração HTTP
 │   └── posts.js        # Endpoints de posts
 ├── components/         # Componentes reutilizáveis
@@ -46,7 +46,7 @@ src/
 ├── styles/             # Estilos globais
 │   └── GlobalStyle.js  # Reset CSS + variáveis
 ├── App.jsx             # Componente raiz + roteamento
-└── main.jsx           # Ponto de entrada
+└── main.jsx            # Ponto de entrada
 ```
 
 ## Setup Inicial
@@ -60,7 +60,7 @@ src/
 
 ```bash
 # Clone do repositório
-git clone <url-do-repositorio>
+git clone https://github.com/MathWhite/tech-challenge-3
 cd tech-challenge-3
 
 # Instalação de dependências
