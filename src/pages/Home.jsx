@@ -57,7 +57,7 @@ export default function Home() {
     <MainContent>
       <Navigation />
       <Container>
-        <h1>Blog da FIAP</h1>
+        <h1>Lista de postagens</h1>
         <SearchBox
           type="text"
           placeholder="Buscar posts..."
