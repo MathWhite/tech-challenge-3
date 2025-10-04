@@ -94,15 +94,20 @@ export default function Login() {
     setLoading(true);
     setError("");
 
-    if (!username || !password) {
+    const u = (username || "").trim();
+    const p = (password || "").trim();
+
+    if (!u || !p) {
       setError("Por favor, preencha todos os campos");
       setLoading(false);
       return;
     }
 
     try {
-      const success = login(username, password);
-      if (success) {
+      console.log("Tentando login com:", u, p);
+      const result = await login(u, p);
+      console.log("Resultado do login:", result);
+      if (result.success) {
         toast.success("Login realizado com sucesso!");
         
         // Redirecionamento baseado no role do usuário
@@ -114,9 +119,11 @@ export default function Login() {
           navigate("/"); // Default para home
         }
       } else {
-        setError("Credenciais inválidas");
+        console.log("Login falhou:", result.message);
+        setError(result.message || "Credenciais inválidas");
       }
-    } catch {
+    } catch (error) {
+      console.error("Erro no login:", error);
       setError("Erro ao fazer login");
     } finally {
       setLoading(false);

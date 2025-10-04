@@ -100,7 +100,7 @@ export default function Navigation() {
                 </>
               )}
               <UserInfo>
-                Olá, {user.username}
+                Olá, {user?.username || user?.name || "usuário"}
               </UserInfo>
               <Button onClick={handleLogout}>
                 Logout
