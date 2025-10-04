@@ -1,10 +1,10 @@
-# Blog FIAP - Tech Challenge 3
+# 📝 Blog FIAP - Tech Challenge 3
 
-## Descrição
+## 📚 Descrição
 
 Sistema de blog desenvolvido em React para professores criarem e gerenciarem posts educacionais com autenticação, CRUD completo e integração com API REST.
 
-## Funcionalidades
+## ✨ Funcionalidades
 
 - **Home**: Lista de posts com busca por palavras-chave
 - **Leitura**: Visualização de posts com suporte a Markdown
@@ -13,7 +13,7 @@ Sistema de blog desenvolvido em React para professores criarem e gerenciarem pos
 - **Admin**: Painel de gerenciamento de posts
 - **Responsivo**: Interface adaptável a dispositivos móveis
 
-## Tecnologias
+## 🚀 Tecnologias
 
 - **React 19** - Framework principal
 - **Vite 7** - Build tool e dev server
@@ -24,7 +24,7 @@ Sistema de blog desenvolvido em React para professores criarem e gerenciarem pos
 - **React Markdown** - Renderização de conteúdo
 - **React Hook Form + Yup** - Formulários e validação
 
-## Arquitetura
+## 🏗️ Arquitetura
 
 ```
 src/
@@ -49,14 +49,14 @@ src/
 └── main.jsx            # Ponto de entrada
 ```
 
-## Setup Inicial
+## 📦 Setup Inicial
 
-### Pré-requisitos
+### ✅ Pré-requisitos
 - Node.js 20+
 - npm 8+
 - Docker (opcional)
 
-### Instalação Local
+### 💻 Instalação Local
 
 ```bash
 # Clone do repositório
@@ -79,7 +79,7 @@ npm run preview
 # Acesso: http://localhost:4173
 ```
 
-### Docker
+### 🐳 Docker
 
 ```bash
 # Desenvolvimento (com hot reload)
@@ -91,7 +91,7 @@ npm run docker:prod
 # Acesso: http://localhost:8080
 ```
 
-## Scripts
+## 🔧 Scripts
 
 ```bash
 # Desenvolvimento
@@ -112,11 +112,11 @@ npm run docker:prod      # Ambiente produção
 npm run docker:clean     # Limpar containers
 ```
 
-## Integração com API
+## 🔗 Integração com API
 
 **Base URL**: `https://tech-challenge-edn9.onrender.com`
 
-### Endpoints
+### 📂 Endpoints
 - `GET /posts` - Listar posts
 - `GET /posts/:id` - Obter post específico
 - `POST /posts` - Criar post (requer auth)
@@ -124,27 +124,27 @@ npm run docker:clean     # Limpar containers
 - `DELETE /posts/:id` - Deletar post (requer auth)
 - `GET /posts/search?q=termo` - Buscar posts
 
-### Autenticação
+### 🔐 Autenticação
 Credenciais de teste:
 - **Professor**: `professor` / `1234`
 - **Aluno**: `aluno` / `1234`
 
-## Guia de Uso
+## 📖 Guia de Uso
 
-### Desenvolvimento
+### ⚡ Desenvolvimento
 1. Clone o repositório
 2. Execute `npm install`
 3. Configure `.env` com a URL da API
 4. Execute `npm run dev`
 5. Acesse `http://localhost:5173`
 
-### Produção
+### 🚀 Produção
 ```bash
 npm run build
 npm run preview
 ```
 
-### Docker
+### 🐳 Docker
 ```bash
 # Desenvolvimento
 docker-compose up app-dev --build
@@ -153,7 +153,7 @@ docker-compose up app-dev --build
 docker-compose up app-prod --build
 ```
 
-## Estrutura de Rotas
+## 🛣️ Estrutura de Rotas
 
 - `/` - Lista de posts (público)
 - `/post/:id` - Visualização de post (público)
@@ -161,3 +161,40 @@ docker-compose up app-prod --build
 - `/create` - Criar post (protegida)
 - `/edit/:id` - Editar post (protegida)
 - `/admin` - Painel admin (protegida)
+
+## 📹 Apresentação
+
+Vídeo demonstrando:
+- Objetivo da aplicação
+- Uso prático do blog
+- Funcionamento do Docker
+- Testes, CI e CD funcionando
+
+[Acesse o video aqui (Google Drive)](Em desenvolvimento)
+
+## 📄 Render
+
+Acesse o projeto em PRD através do Render.
+
+```bash
+BaseUrl: https://tech-challenge-3-03uj.onrender.com
+```
+
+## 🤝 Colaborador
+
+- Matheus Carvalho
+
+## 📄 Documentação Técnica Complementar
+
+Documentações adicionais exigidas pelo Tech Challenge estão disponíveis na pasta [`/src/docs`](./src/docs), incluindo:
+
+- [`relato.md`](./src/docs/relato.md) – Relato de experiências, aprendizados e desafios enfrentados durante o desenvolvimento
+
+
+## 🏁 Conclusão
+
+Este projeto foi desenvolvido com foco em entregar uma solução real e escalável para professores da rede pública, aplicando práticas modernas de desenvolvimento, testes e documentação.
+
+## 📝 Licença
+
+Este projeto está licenciado sob a Licença MIT. Veja o arquivo [LICENSE](./LICENSE) para mais detalhes.
