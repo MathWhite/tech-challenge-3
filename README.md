@@ -170,7 +170,7 @@ Vídeo demonstrando:
 - Funcionamento do Docker
 - Testes, CI e CD funcionando
 
-[Acesse o video aqui (Google Drive)](Em desenvolvimento)
+[Acesse o video aqui (Google Drive)](https://drive.google.com/file/d/1ZpvmzFsIydm-pADseNulvNsSxomZg6VL/view?usp=drive_link)
 
 ## 📄 Render
 
