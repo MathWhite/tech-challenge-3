@@ -29,9 +29,21 @@ api.interceptors.response.use(
   (response) => response,
   (error) => {
     if (error.response?.status === 401) {
-      // Token inválido ou expirado
-      localStorage.removeItem("user");
-      window.location.href = "/login";
+      // Apenas redireciona para login se for um erro crítico de autenticação
+      // Evita redirecionamento em casos de pesquisa ou outras operações não críticas
+      const currentPath = window.location.pathname;
+      
+      // Se já estiver na página de login, não redireciona novamente
+      if (currentPath !== '/login') {
+        // Verifica se é uma requisição de pesquisa - não redireciona automaticamente
+        const isSearchRequest = error.config?.url?.includes('/search');
+        
+        if (!isSearchRequest) {
+          // Token inválido ou expirado para operações críticas
+          localStorage.removeItem("user");
+          window.location.href = "/login";
+        }
+      }
     }
     return Promise.reject(error);
   }

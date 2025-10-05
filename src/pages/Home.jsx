@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useMemo } from "react";
 import styled from "styled-components";
 import PostCard from "../components/PostCard";
 import Navigation from "../components/Navigation";
@@ -31,23 +31,62 @@ const Message = styled.p`
   color: #666;
 `;
 
+const ErrorMessage = styled.p`
+  text-align: center;
+  margin-top: 1rem;
+  color: #e74c3c;
+  background: #ffeaea;
+  padding: 0.75rem;
+  border-radius: 6px;
+  border: 1px solid #f5c6cb;
+`;
+
 export default function Home() {
   const [posts, setPosts] = useState([]);
   const [query, setQuery] = useState("");
+  const [debouncedQuery, setDebouncedQuery] = useState("");
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
   const { isProfessor } = useAuth();
+
+  // Debounce da query para evitar muitas requisições
+  useEffect(() => {
+    const timeoutId = setTimeout(() => {
+      setDebouncedQuery(query);
+    }, 500);
+
+    return () => clearTimeout(timeoutId);
+  }, [query]);
 
   const fetchPosts = useCallback(async () => {
     setLoading(true);
+    setError(null);
     try {
-      const data = query ? await searchPosts(query) : await getPosts();
+      const data = debouncedQuery ? await searchPosts(debouncedQuery) : await getPosts();
       setPosts(data);
     } catch (err) {
       console.error("Erro ao buscar posts", err);
+      
+      // Se for erro 401 na pesquisa, tenta fazer a busca geral
+      if (err.response?.status === 401 && debouncedQuery) {
+        console.log("Erro 401 na pesquisa, tentando busca geral...");
+        try {
+          const fallbackData = await getPosts();
+          setPosts(fallbackData);
+          setError("Pesquisa indisponível. Mostrando todos os posts.");
+        } catch (fallbackErr) {
+          console.error("Erro na busca geral também:", fallbackErr);
+          setPosts([]);
+          setError("Erro ao carregar posts. Tente novamente.");
+        }
+      } else {
+        setPosts([]);
+        setError("Erro ao carregar posts. Tente novamente.");
+      }
     } finally {
       setLoading(false);
     }
-  }, [query]);
+  }, [debouncedQuery]);
 
   useEffect(() => {
     fetchPosts();
@@ -65,8 +104,10 @@ export default function Home() {
           onChange={(e) => setQuery(e.target.value)}
         />
 
+        {error && <ErrorMessage>{error}</ErrorMessage>}
+
         {loading && <Message>Carregando posts...</Message>}
-        {!loading && posts.length === 0 && <Message>Nenhum post encontrado.</Message>}
+        {!loading && posts.length === 0 && !error && <Message>Nenhum post encontrado.</Message>}
 
         {posts.map((post) => (
           <PostCard

@@ -8,8 +8,8 @@ const Card = styled.div`
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
   margin-bottom: 1rem;
   transition: transform 0.2s;
-  opacity: ${props => (props.isInactive ? 0.6 : 1)};
-  background-color: ${props => (props.isInactive ? '#f5f5f5' : 'white')};
+  opacity: ${({ $isInactive }) => ($isInactive ? 0.6 : 1)};
+  background-color: ${({ $isInactive }) => ($isInactive ? '#f5f5f5' : 'white')};
   
   &:hover {
     transform: translateY(-2px);
@@ -42,7 +42,7 @@ export default function PostCard({ id, title, author, description, readTime, isA
   const isInactive = isProfessorView && !isActive;
   
   return (
-    <Card isInactive={isInactive}>
+    <Card $isInactive={isInactive}>
       <Link to={`/post/${id}`}>
         <Title>{title}</Title>
       </Link>

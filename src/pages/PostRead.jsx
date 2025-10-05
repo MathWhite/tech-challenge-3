@@ -206,6 +206,8 @@ const CommentMenuButton = styled.button`
   display: flex;
   align-items: center;
   justify-content: center;
+  min-width: 24px;
+  min-height: 24px;
   
   &:hover {
     background: rgba(0, 0, 0, 0.1);
@@ -432,19 +434,29 @@ export default function PostRead() {
   }, [openMenuComment]);
 
   // Função para verificar se o usuário pode editar/deletar um comentário
+  const normalize = (v) => String(v || "").trim().toLowerCase();
+  const isOwnComment = (comment) => {
+    const author = normalize(comment?.author);
+    const candidates = [user?.username, user?.name]
+      .map(normalize)
+      .filter(Boolean);
+    return candidates.includes(author);
+  };
+
   const canEditComment = (comment) => {
     if (!user) return false;
-    return comment.author === user.username;
+    return isOwnComment(comment);
   };
 
   const canDeleteComment = (comment) => {
     if (!user) return false;
     // Professor pode deletar comentários de alunos, mas não de outros professores
     if (user.role === "professor") {
-      return comment.author === user.username || comment.authorRole === "aluno";
+      const authorRole = normalize(comment?.authorRole || comment?.role);
+      return isOwnComment(comment) || authorRole === "aluno";
     }
     // Aluno só pode deletar seus próprios comentários
-    return comment.author === user.username;
+    return isOwnComment(comment);
   };
 
   if (loading) {
@@ -520,34 +532,50 @@ export default function PostRead() {
                 <CommentAuthor>{comment.author}</CommentAuthor>
                 <CommentDate>{formatDate(comment.createdAt)}</CommentDate>
               </CommentInfo>
-              {user && (canEditComment(comment) || canDeleteComment(comment)) && (
+              {user && (
                 <div style={{ position: 'relative' }}>
-                  <CommentMenuButton 
+                  <CommentMenuButton
+                    aria-label="Abrir menu do comentário"
+                    title="Mais ações"
                     onClick={(e) => {
                       e.stopPropagation();
                       toggleCommentMenu(comment._id);
                     }}
                   >
-                    <Icon path={mdiDotsHorizontal} size={0.8} />
+                    <Icon
+                      path={mdiDotsHorizontal}
+                      size={0.8}
+                      style={{ display: 'block' }}
+                    />
                   </CommentMenuButton>
-                  
-                  {openMenuComment === comment._id && (
+
+                  {openMenuComment === comment._id && (canEditComment(comment) || canDeleteComment(comment)) && (
                     <CommentMenu onClick={(e) => e.stopPropagation()}>
                       {canEditComment(comment) && (
-                        <CommentMenuItem onClick={() => {
-                          handleEditComment(comment);
-                          setOpenMenuComment(null);
-                        }}>
-                          <Icon path={mdiPencil} size={0.7} />
+                        <CommentMenuItem
+                          onClick={() => {
+                            handleEditComment(comment);
+                            setOpenMenuComment(null);
+                          }}
+                        >
+                          <Icon
+                            path={mdiPencil}
+                            size={0.7}
+                            style={{ display: 'inline-block', marginRight: '0.5rem' }}
+                          />
                           Editar
                         </CommentMenuItem>
                       )}
                       {canDeleteComment(comment) && (
-                        <CommentMenuItem 
-                          className="delete" 
+                        <CommentMenuItem
+                          className="delete"
                           onClick={() => handleDeleteComment(comment._id)}
                         >
-                          <Icon path={mdiDelete} size={0.7} />
+                          <Icon
+                            path={mdiDelete}
+                            size={0.7}
+                            style={{ display: 'inline-block', marginRight: '0.5rem' }}
+                          />
                           Deletar
                         </CommentMenuItem>
                       )}
